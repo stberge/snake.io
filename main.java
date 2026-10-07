@@ -1,13 +1,9 @@
-import java.io.*;
-import javax.swing.*;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Font;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JTextArea;
+
 
 // Main class
 class GFG {
@@ -15,43 +11,38 @@ class GFG {
     // Main driver method
     public static void main(String[] args)
     {
-        // Creating instance of JFrame
+        // Setup frame
         JFrame frame = new JFrame();
-
-        // Creating instance of JButton
-        JButton button = new JButton(" Start snake.io");
-
-        // x axis, y axis, width, height
-        button.setBounds(150, 200, 220, 50);
-
-        // adding button in JFrame
-        frame.add(button);
-
-        // 400 width and 500 height
-        frame.setSize(500, 600);
-
-        // using no layout managers
+        frame.setSize(1280, 720);
         frame.setLayout(null);
-
-        // making the frame visible
         frame.setVisible(true);
+        frame.setResizable(false);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        setLayout(new BorderLayout());
-        //////CREATE SWING COMPONENTS////////////
-        //OUTPUT TEXT AREA
-        uneditTextArea.setEditable(false);
 
-        //INPUT TEXT AREA
-        editTextArea.setBackground(Color.BLUE);
-        editTextArea.setForeground(Color.WHITE)
+        // Creates button
+        JButton button = new JButton(" Start snake.io");
+        int widthButton = 250;
+        int heightButton= 100;
+        button.setBounds((1280 - widthButton) / 2, (720 - heightButton) / 2, widthButton, heightButton);
+        button.setFont(new Font("SansSerif", Font.BOLD, 25));
+        button.setBackground(Color.lightGray);
+        button.setBorder(BorderFactory.createEtchedBorder());
 
-        //SET CONTENT PANE
-        Container c = getContentPane();
 
-        //ADD COMPONENTS TO CONTENT PANE        
-        c.add(uneditTextArea, BorderLayout.CENTER);
-        c.add(editTextArea, BorderLayout.SOUTH);
-        c.add(inputButton, BorderLayout.WEST);
 
+        frame.add(button);
+        button.addActionListener(e -> {
+            GamePanel game = new GamePanel();
+            frame.setContentPane(game);
+            frame.revalidate();
+            frame.repaint();
+            game.StartGameThread();
+        });
+
+        button.setFocusable(false);
+
+    
+        
     }
 }
