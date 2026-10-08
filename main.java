@@ -6,7 +6,7 @@ import javax.swing.JFrame;
 
 
 // Main class
-class GFG {
+class Main {
 
     // Main driver method
     public static void main(String[] args)
@@ -35,6 +35,7 @@ class GFG {
         button.setFont(new Font("SansSerif", Font.BOLD, 25));
         button.setBackground(Color.lightGray);
         button.setBorder(BorderFactory.createEtchedBorder());
+        
 
         frame.add(button);
         

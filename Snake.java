@@ -18,10 +18,10 @@ public class Snake {
         }
     }
 
-    public void update(double targetX, double targetY, double LastMouseX, double LastMouseY) {
+    public void update(double targetX, double targetY, boolean mouseMoved) {
         double[] head = body.get(0);
 
-        if (targetX == LastMouseX && targetY == LastMouseY) {
+        if (!mouseMoved) {
             // If the mouse hasn't moved, keep moving in the same direction
             head[0] += Math.cos(angle) * SPEED;
             head[1] += Math.sin(angle) * SPEED;
@@ -52,11 +52,17 @@ public class Snake {
         }
     }
 
-    public void draw(Graphics2D g) {
+    public double getX() {
+            return body.get(0)[0];
+        }
+    public double getY() {
+            return body.get(0)[1];
+        }
+
+    public void draw(Graphics2D g, double cameraX, double cameraY) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(new Color(34, 139, 34)); 
 
-        // Draw from tail to head so the head sits on top
         for (int i = body.size() - 1; i >= 0; i--) {
             double[] seg = body.get(i);
             int r;
@@ -66,8 +72,8 @@ public class Snake {
                 r = RADIUS - 4;
 }
             g.fillOval(
-                (int) seg[0] - r,
-                (int) seg[1] - r,
+                (int) (seg[0] - cameraX) - r,
+                (int) (seg[1] - cameraY) - r,
                 r * 2,
                 r * 2
             );
