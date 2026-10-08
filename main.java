@@ -13,7 +13,8 @@ class GFG {
     {
         // Setup frame
         JFrame frame = new JFrame();
-        frame.setSize(1280, 720);
+        //frame.setSize(1280, 720);     changed to full screen
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLayout(null);
         frame.setVisible(true);
         frame.setResizable(false);
@@ -24,14 +25,20 @@ class GFG {
         JButton button = new JButton(" Start snake.io");
         int widthButton = 250;
         int heightButton= 100;
-        button.setBounds((1280 - widthButton) / 2, (720 - heightButton) / 2, widthButton, heightButton);
+        //button.setBounds((1280 - widthButton) / 2, (720 - heightButton) / 2, widthButton, heightButton);
+        button.setBounds(
+              (frame.getWidth() - widthButton) / 2,
+              (frame.getHeight() - heightButton) / 2,
+              widthButton,
+              heightButton
+        );
         button.setFont(new Font("SansSerif", Font.BOLD, 25));
         button.setBackground(Color.lightGray);
         button.setBorder(BorderFactory.createEtchedBorder());
 
-
-
         frame.add(button);
+        
+
         button.addActionListener(e -> {
             GamePanel game = new GamePanel();
             frame.setContentPane(game);
