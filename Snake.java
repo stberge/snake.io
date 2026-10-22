@@ -1,8 +1,8 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.awt.image.BufferedImage;
+import java.util.concurrent.CopyOnWriteArrayList;
 import javax.imageio.ImageIO;
 
 public class Snake {
@@ -19,7 +19,12 @@ public class Snake {
     // [ ... ]]
     private final CopyOnWriteArrayList <double[]> body = new CopyOnWriteArrayList<>(); 
     private double angle = 0; // direction the head is facing, in radians
+    private volatile  boolean boostHeld = false;
+    private double distanceSinceLastDrop = 0;
     private BufferedImage faceDerpImg;
+
+    private static final double BOOST_DROP_DISTANCE = 70;
+    private static final int BOOST_PELLET_RADIUS = 10;
 
     public Snake(double x, double y) {
         for (int i = 0; i < SEGMENTS; i++) {
@@ -117,49 +122,18 @@ public class Snake {
         }
 
     public int getRadius(){
-        return Snake.RADIUS;
+        int baseRadius = 12;
+        int sizeIncrease = body.size() / 15;
+        return Math.min(baseRadius + sizeIncrease, 100);
     }
 
 
-    public void grow(){
-        double [] last = body.get(body.size() - 1 );
-        body.add(new double []{last[0], last[1]});
-    }
-
-
-    public void draw(Graphics2D g, double cameraX, double cameraY) {
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        // Draw from tail to head so the head ends up on top
-        for (int i = body.size() - 1; i >= 0; i--) {
-            double[] seg = body.get(i);
-            
-            if (i == 0) {
-                // Head: green circle, then the face image on top
-                int x = (int) (seg[0] - cameraX) - RADIUS;
-                int y = (int) (seg[1] - cameraY) - RADIUS;
-                int diameter = RADIUS * 2;
-            
-
-            g.setColor(new Color(34, 139, 34));
-            g.fillOval(x, y, diameter, diameter);
-
-            if (faceDerpImg != null) {
-                g.drawImage(faceDerpImg, x, y, diameter, diameter, null);
-            }
-            } else {
-                // Body segments: smaller green circles
-                int r = RADIUS - 4;
-                g.setColor(new Color(34, 139, 34));
-                g.fillOval(
-                    (int) (seg[0] - cameraX) - r,
-                    (int) (seg[1] - cameraY) - r,
-                    r * 2,
-                    r * 2
-               );
+    public void grow(int amount){
+        for (int i = 0; i < amount; i++) {
+            double [] last = body.get(body.size() - 1 );
+            body.add(new double []{last[0], last[1]});
         }
     }
-}
-
 
 
     public void draw(Graphics2D g, double cameraX, double cameraY) {

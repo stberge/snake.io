@@ -43,11 +43,6 @@ public class GamePanel extends JPanel implements Runnable {
         add(leaderboard);
         leaderboard.addPoints(this.playerName, 0);
 
-        setLayout(null);
-        leaderboard.setBounds(Width - 220, 10, 200, 150);
-        add(leaderboard);
-        leaderboard.addPoints("Player", 0);
-
         snake = new Snake(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
 
         for (int i=0; i < FOOD_COUNT; i++){
@@ -163,8 +158,8 @@ public class GamePanel extends JPanel implements Runnable {
             for(Food pellet : pellets ){
                 if (pellet.isTouching(snake.getX(), snake.getY(), snake.getRadius())) {
                     pellets.remove(pellet);
-                    snake.grow();
-                    leaderboard.addPoints("Player", 1);
+                    snake.grow(pellet.segmentValue());
+                    leaderboard.addPoints(playerName, pellet.pointValue());
                     spawnFood();
                 }
             }

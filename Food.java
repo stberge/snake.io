@@ -29,5 +29,23 @@ public class Food {
     }
 
 
+    public int getValue(){
+        if (radius <= 11){
+            return 1;
+        } else if (radius <= 14) {
+            return 2;
+        } else {
+            return 3;
+        }
+    }
+
+    public int segmentValue() {
+        return getValue();
+    }
+
+    public int pointValue() {
+        return getValue();
+    }
+
 
 }
