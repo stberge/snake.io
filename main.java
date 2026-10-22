@@ -41,10 +41,40 @@ class Main {
         
 
         frame.add(button);
-        
 
+        // create username
+        JTextField textField =  new JTextField();
+        int textWidth = 200;
+        int textHeight = 40;
+
+        textField.setBounds(
+            (frame.getWidth() - textWidth) / 2,
+            ((frame.getHeight() - textHeight) / 2) -100,
+            textWidth,
+            textHeight
+        );
+        textField.setFont(new Font("SansSerif", Font.BOLD, 25));
+
+        JLabel usernamelabel = new JLabel("Username");
+        usernamelabel.setBounds(frame.getWidth()/2 - 100 , frame.getHeight()/2 - 155 ,250,40 );
+        usernamelabel.setFont(new Font("SansSerif",Font.BOLD,25));
+        frame.add(usernamelabel);
+
+        frame.add(textField);
+        frame.revalidate();
+        frame.repaint();
+
+
+
+        // handlles button and username input
         button.addActionListener(e -> {
-            GamePanel game = new GamePanel();
+            String username = textField.getText().trim();
+            if(username.isEmpty()) {
+                username = "Player";
+            }
+
+
+            GamePanel game = new GamePanel(username);
             frame.setContentPane(game);
             frame.revalidate();
             frame.repaint();
@@ -53,7 +83,10 @@ class Main {
 
         button.setFocusable(false);
 
+
+        
+
     
         
     }
-}
+}    

@@ -9,11 +9,15 @@ public class Snake {
     private static final int SEGMENTS = 3;
     private static final double SPEED = 3.0;          // pixels per frame
     private static final double SEGMENT_GAP = 12;     // distance between segments
-    private static final int RADIUS = 12;
+    private static final double BASETURN_RATE = 0.07;
+    private static final double MINTURN_RATE = 0.03;
+    private static final int CAP_LENGTH = 60;
+    private static final double BOOST_SPEED = 6.0;
+    private static final int MIN_BOOST_LENGTH = 15;
 
     //body [ [500, 300],
     // [ ... ]]
-    private final ArrayList<double[]> body = new ArrayList<>(); 
+    private final CopyOnWriteArrayList <double[]> body = new CopyOnWriteArrayList<>(); 
     private double angle = 0; // direction the head is facing, in radians
     private BufferedImage faceDerpImg;
 
@@ -29,22 +33,51 @@ public class Snake {
         }
     }
 
-    public void update(double targetX, double targetY, boolean mouseMoved) {
+    //Boost
+    public void setBoosting(boolean held){
+        this.boostHeld = held;
+    }
+
+    // movement
+
+    public Food updateAndDrop(double targetX, double targetY) {
         double[] head = body.get(0);
 
-        if (!mouseMoved) {
-            // If the mouse hasn't moved, keep moving in the same direction
-            head[0] += Math.cos(angle) * SPEED;
-            head[1] += Math.sin(angle) * SPEED;
-        }else {
-            // If the mouse has moved, update the angle to point towards it
-            angle = Math.atan2(targetY - head[1], targetX - head[0]);
-            // Always move forward
-            head[0] += Math.cos(angle) * SPEED;
-            head[1] += Math.sin(angle) * SPEED;
+        double dx = targetX - head[0];
+        double dy = targetY - head[1];
+        double t = Math.min(1.0,(body.size() - SEGMENTS) / (double) (CAP_LENGTH - SEGMENTS));
+        double turnRate = BASETURN_RATE  - (BASETURN_RATE - MINTURN_RATE) * Math.pow(t, 1);
+        boolean boosting = boostHeld && body.size() > MIN_BOOST_LENGTH;
+        double currentSpeed = boosting ? BOOST_SPEED : SPEED;
+
+        if (Math.hypot(dx, dy) > 5) {
+            double targetAngle = Math.atan2(dy, dx);
+            double diff = targetAngle - angle;
+
+            while (diff > Math.PI) { 
+                diff -= 2*Math.PI;
+            }
+
+            while (diff < -Math.PI) {
+                diff += 2*Math.PI; 
+            }
+            
+            if(Math.abs(diff) < turnRate){
+                angle = targetAngle;
+            } else {
+                angle += turnRate * Math.signum(diff);
+            }
+
         }
+
         
+
+        head[0] += Math.cos(angle) * currentSpeed;
+        head[1] += Math.sin(angle) * currentSpeed;
+
         
+
+
         
 
         // Each segment follows the one in front of it
@@ -52,15 +85,28 @@ public class Snake {
             double[] front = body.get(i - 1);
             double[] seg = body.get(i);
 
-            double dx = front[0] - seg[0];
-            double dy = front[1] - seg[1];
-            double dist = Math.hypot(dx, dy);
+            double segDx = front[0] - seg[0];
+            double segDy = front[1] - seg[1];
+            double dist = Math.hypot(segDx, segDy);
             
             if (dist > SEGMENT_GAP) {
-                seg[0] = front[0] - dx / dist * SEGMENT_GAP;
-                seg[1] = front[1] - dy / dist * SEGMENT_GAP;
+                seg[0] = front[0] - segDx / dist * SEGMENT_GAP;
+                seg[1] = front[1] - segDy / dist * SEGMENT_GAP;
             }
         }
+
+        Food droppedFood = null;
+        if(boosting){
+            distanceSinceLastDrop += currentSpeed;
+            if (distanceSinceLastDrop >= BOOST_DROP_DISTANCE){
+                distanceSinceLastDrop = 0;
+                double [] tail = body.remove(body.size() -1);
+                droppedFood = new Food(tail[0], tail[1], BOOST_PELLET_RADIUS);
+            }
+        } else {
+            distanceSinceLastDrop = 0;
+        }
+        return droppedFood;
     }
 
     public double getX() {
@@ -118,22 +164,43 @@ public class Snake {
 
     public void draw(Graphics2D g, double cameraX, double cameraY) {
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setColor(new Color(34, 139, 34)); 
 
-        for (int i = body.size() - 1; i >= 0; i--) {
-            double[] seg = body.get(i);
-            int r;
+
+        double[][] segs  = body.toArray(new double [0][]);
+
+        int currentRadius = getRadius();
+        // Draw from tail to head so the head ends up on top
+        for (int i = segs.length - 1; i >= 0; i--) {
+            double[] seg = segs[i];
+            
             if (i == 0) {
-                r = RADIUS;
+                // Head: green circle, then the face image on top
+                int x = (int) (seg[0] - cameraX) - currentRadius;
+                int y = (int) (seg[1] - cameraY) - currentRadius;
+                int diameter = currentRadius * 2;
+            
+
+            g.setColor(new Color(34, 139, 34));
+            g.fillOval(x, y, diameter, diameter);
+
+            if (faceDerpImg != null) {
+                g.drawImage(faceDerpImg, x, y, diameter, diameter, null);
+            }
             } else {
-                r = RADIUS - 4;
-}
-            g.fillOval(
-                (int) (seg[0] - cameraX) - r,
-                (int) (seg[1] - cameraY) - r,
-                r * 2,
-                r * 2
-            );
+                // Body segments: smaller green circles
+                int r = currentRadius - 4;
+                g.setColor(new Color(34, 139, 34));
+                g.fillOval(
+                    (int) (seg[0] - cameraX) - r,
+                    (int) (seg[1] - cameraY) - r,
+                    r * 2,
+                    r * 2
+               );
         }
     }
+}
+
+
+
+   
 }
