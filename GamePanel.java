@@ -46,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable {
         add(leaderboard);
         leaderboard.addPoints(this.playerName, 0);
 
-        snake = new Snake(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
+        snake = new Snake(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, true, Snake.randomColor());
 
         for (int i = 0; i < FOOD_COUNT; i++) {
             spawnFood();
