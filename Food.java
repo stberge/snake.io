@@ -17,7 +17,7 @@ public class Food {
     public void draw(Graphics2D g,double cameraX,double cameraY){
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(color);
-        g.fillOval((int)(x - cameraX) - radius, (int) (y- cameraY) - radius, radius, radius);
+        g.fillOval((int)(x - cameraX) - radius, (int) (y- cameraY) - radius, radius*2, radius*2);
 
     }
 

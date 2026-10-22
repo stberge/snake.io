@@ -27,14 +27,20 @@ public class Snake {
     private static final int BOOST_PELLET_RADIUS = 10;
 
     public Snake(double x, double y) {
+        this(x, y, true);
+    }
+
+    public Snake(double x, double y, boolean withFace) {
         for (int i = 0; i < SEGMENTS; i++) {
             body.add(new double[]{x, y});
         }
-        
-        try {
-            faceDerpImg = ImageIO.read(new File("face_derp.png"));
-        }  catch (IOException e) {
-            System.err.println("Could not load face_derp.png: " + e.getMessage());
+
+        if (withFace) {
+            try {
+                faceDerpImg = ImageIO.read(new File("face_derp.png"));
+            }  catch (IOException e) {
+                System.err.println("Could not load face_derp.png: " + e.getMessage());
+            }
         }
     }
 
@@ -75,15 +81,8 @@ public class Snake {
 
         }
 
-        
-
         head[0] += Math.cos(angle) * currentSpeed;
         head[1] += Math.sin(angle) * currentSpeed;
-
-        
-
-
-        
 
         // Each segment follows the one in front of it
         for (int i = 1; i < body.size(); i++) {

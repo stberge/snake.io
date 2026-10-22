@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import javax.swing.*;
 
@@ -22,9 +23,11 @@ public class GamePanel extends JPanel implements Runnable {
     private volatile int mouseX = 640;
     private volatile int mouseY = 360;
     private static final int FOOD_COUNT = 200;
+    private static final int BOT_COUNT = 10;
     private final String playerName;
 
     CopyOnWriteArrayList<Food> pellets = new CopyOnWriteArrayList<>();
+    private final ArrayList<Bot> bots = new ArrayList<>();
 
     private final Leaderboard leaderboard = new Leaderboard();
 
@@ -45,8 +48,14 @@ public class GamePanel extends JPanel implements Runnable {
 
         snake = new Snake(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
 
-        for (int i=0; i < FOOD_COUNT; i++){
+        for (int i = 0; i < FOOD_COUNT; i++) {
             spawnFood();
+        }
+
+        for (int i = 0; i < BOT_COUNT; i++) {
+            double x = 100 + Math.random() * (WORLD_WIDTH - 200);
+            double y = 100 + Math.random() * (WORLD_HEIGHT - 200);
+            bots.add(new Bot(x, y));
         }
 
         // mouse input
@@ -84,9 +93,6 @@ public class GamePanel extends JPanel implements Runnable {
                 snake.setBoosting(false);
             }
         });
-
-      
-
     }
 
 
@@ -106,7 +112,7 @@ public class GamePanel extends JPanel implements Runnable {
     // camera
     private void updateCamera() {
         cameraX = snake.getX() - getWidth() / 2.0;
-        cameraY = snake.getY() - getHeight()/ 2.0;
+        cameraY = snake.getY() - getHeight() / 2.0;
 
         cameraX = Math.max(0, Math.min(cameraX, WORLD_WIDTH - getWidth()));
         cameraY = Math.max(0, Math.min(cameraY, WORLD_HEIGHT - getHeight()));
@@ -125,18 +131,12 @@ public class GamePanel extends JPanel implements Runnable {
         pellets.add(new Food(ranX, ranY, radius));
     }
 
-    
-   
 
-
-
-
-
-    public void StartGameThread(){
+    public void StartGameThread() {
         gameThread = new Thread(this);
         gameThread.start();
     }
-    
+
     // game loop, about 60 frames per second
     @Override
     public void run() {
@@ -155,12 +155,23 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
             // Food disappearing mechanism
-            for(Food pellet : pellets ){
+            for (Food pellet : pellets) {
                 if (pellet.isTouching(snake.getX(), snake.getY(), snake.getRadius())) {
                     pellets.remove(pellet);
                     snake.grow(pellet.segmentValue());
                     leaderboard.addPoints(playerName, pellet.pointValue());
                     spawnFood();
+                }
+            }
+
+            for (Bot bot : bots) {
+                Snake s = bot.getSnake();
+                bot.update(pellets);
+                for (Food pellet : pellets) {
+                    if (pellet.isTouching(s.getX(), s.getY(), s.getRadius()) && pellets.remove(pellet)) {
+                        s.grow(pellet.segmentValue());
+                        spawnFood();
+                    }
                 }
             }
 
@@ -183,11 +194,13 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGrid((Graphics2D) g);
-        for (Food pellet : pellets){
-            pellet.draw((Graphics2D)g, cameraX, cameraY);
+        for (Food pellet : pellets) {
+            pellet.draw((Graphics2D) g, cameraX, cameraY);
+        }
+        for (Bot bot : bots) {
+            bot.getSnake().draw((Graphics2D) g, cameraX, cameraY);
         }
         snake.draw((Graphics2D) g, cameraX, cameraY);
     }
-    
    
 }
