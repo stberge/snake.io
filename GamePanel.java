@@ -28,10 +28,6 @@ public class GamePanel extends JPanel implements Runnable {
 
     private final Leaderboard leaderboard = new Leaderboard();
 
-    CopyOnWriteArrayList<Food> pellets = new CopyOnWriteArrayList<>();
-
-    private final Leaderboard leaderboard = new Leaderboard();
-
     Thread gameThread;
 
     public GamePanel(String playerName) {
@@ -54,7 +50,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         snake = new Snake(WORLD_WIDTH / 2, WORLD_HEIGHT / 2);
 
-        for (int i=0; i < 200; i++){
+        for (int i=0; i < FOOD_COUNT; i++){
             spawnFood();
         }
 
@@ -156,21 +152,9 @@ public class GamePanel extends JPanel implements Runnable {
             double worldMouseX = mouseX + cameraX;
             double worldMouseY = mouseY + cameraY;
 
-            snake.update(worldMouseX, worldMouseY, worldMouseX != LastMouseX || worldMouseY != LastMouseY);
-
-            // Food disappearing mechanism
-            for(Food pellet : pellets ){
-                if (pellet.isTouching(snake.getX(), snake.getY(), snake.getRadius())) {
-                    pellets.remove(pellet);
-                    snake.grow();
-                    leaderboard.addPoints("Player", 1);
-                    spawnFood();
-                }
-            }
-
-
-            updateCamera();
-            repaint();
+            Food droppedFood = snake.updateAndDrop(worldMouseX, worldMouseY);
+            if (droppedFood != null) {
+                pellets.add(droppedFood);
 
                 leaderboard.addPoints(playerName, -droppedFood.pointValue());
             }
@@ -179,8 +163,8 @@ public class GamePanel extends JPanel implements Runnable {
             for(Food pellet : pellets ){
                 if (pellet.isTouching(snake.getX(), snake.getY(), snake.getRadius())) {
                     pellets.remove(pellet);
-                    snake.grow(pellet.segmentValue());
-                    leaderboard.addPoints(playerName, pellet.pointValue());
+                    snake.grow();
+                    leaderboard.addPoints("Player", 1);
                     spawnFood();
                 }
             }
