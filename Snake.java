@@ -54,6 +54,10 @@ public class Snake {
         this.angle = newAngle;
     }
 
+    public int getLength() {
+        return body.size();
+    }
+
     public Food updateAndDrop(double targetX, double targetY) {
         double[] head = body.get(0);
 

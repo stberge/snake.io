@@ -6,6 +6,7 @@ class Bot {
     private static final double SNAP_DISTANCE = 80;
     private static final double WANDER_REACHED = 40;
 
+    private final String name;
     private final Snake snake;
     private final Random random = new Random();
     private Food target;
@@ -13,8 +14,13 @@ class Bot {
     private double targetY;
     private int framesLeft = 0;
 
-    Bot(double x, double y) {
+    Bot(String name, double x, double y) {
+        this.name = name;
         snake = new Snake(x, y, true, Snake.randomColor());
+    }
+
+    String getName() {
+        return name;
     }
 
     Snake getSnake() {

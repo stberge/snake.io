@@ -44,7 +44,6 @@ public class GamePanel extends JPanel implements Runnable {
         setLayout(null);
         leaderboard.setBounds(Width - 220, 10, 200, 150);
         add(leaderboard);
-        leaderboard.addPoints(this.playerName, 0);
 
         snake = new Snake(WORLD_WIDTH / 2, WORLD_HEIGHT / 2, true, Snake.randomColor());
 
@@ -55,8 +54,10 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < BOT_COUNT; i++) {
             double x = 100 + Math.random() * (WORLD_WIDTH - 200);
             double y = 100 + Math.random() * (WORLD_HEIGHT - 200);
-            bots.add(new Bot(x, y));
+            bots.add(new Bot("Bot " + (i + 1), x, y));
         }
+
+        updateLeaderboard();
 
         // mouse input
         addMouseMotionListener(new MouseAdapter() {
@@ -131,6 +132,14 @@ public class GamePanel extends JPanel implements Runnable {
         pellets.add(new Food(ranX, ranY, radius));
     }
 
+    // pushes the current length of the player and every bot to the leaderboard
+    private void updateLeaderboard() {
+        leaderboard.setScore(playerName, snake.getLength());
+        for (Bot bot : bots) {
+            leaderboard.setScore(bot.getName(), bot.getSnake().getLength());
+        }
+    }
+
 
     public void StartGameThread() {
         gameThread = new Thread(this);
@@ -150,8 +159,6 @@ public class GamePanel extends JPanel implements Runnable {
             Food droppedFood = snake.updateAndDrop(worldMouseX, worldMouseY);
             if (droppedFood != null) {
                 pellets.add(droppedFood);
-
-                leaderboard.addPoints(playerName, -droppedFood.pointValue());
             }
 
             // Food disappearing mechanism
@@ -159,7 +166,6 @@ public class GamePanel extends JPanel implements Runnable {
                 if (pellet.isTouching(snake.getX(), snake.getY(), snake.getRadius())) {
                     pellets.remove(pellet);
                     snake.grow(pellet.segmentValue());
-                    leaderboard.addPoints(playerName, pellet.pointValue());
                     spawnFood();
                 }
             }
@@ -175,6 +181,7 @@ public class GamePanel extends JPanel implements Runnable {
                 }
             }
 
+            updateLeaderboard();
             updateCamera();
             repaint();
 
