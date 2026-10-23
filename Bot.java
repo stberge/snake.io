@@ -1,18 +1,16 @@
-import java.util.Random;
-
-// eats the nearest food in sight, otherwise wanders around
 class Bot {
-    private static final double SIGHT = 300;
-    private static final int WANDER_FRAMES = 180;
-
+    private final String name;
     private final Snake snake;
-    private final Random random = new Random();
-    private double targetX;
-    private double targetY;
-    private int framesLeft = 0;
+    private final BotStrategy strategy;
 
-    Bot(double x, double y) {
-        snake = new Snake(x, y, true); 
+    Bot(String name, double x, double y, BotStrategy strategy) {
+        this.name = name;
+        this.strategy = strategy;
+        snake = new Snake(x, y, true, Snake.randomColor());
+    }
+
+    String getName() {
+        return name;
     }
 
     Snake getSnake() {
@@ -20,31 +18,7 @@ class Bot {
     }
 
     void update(Iterable<Food> pellets) {
-        double headX = snake.getX();
-        double headY = snake.getY();
-
-        Food nearest = null;
-        double best = SIGHT;
-        for (Food f : pellets) {
-            double d = Math.hypot(f.x - headX, f.y - headY);
-            if (d < best) {
-                best = d;
-                nearest = f;
-            }
-        }
-
-        if (nearest != null) {
-            targetX = nearest.x;
-            targetY = nearest.y;
-        } else {
-            if (framesLeft <= 0) {
-                targetX = 100 + random.nextDouble() * (GamePanel.WORLD_WIDTH - 200);
-                targetY = 100 + random.nextDouble() * (GamePanel.WORLD_HEIGHT - 200);
-                framesLeft = WANDER_FRAMES;
-            }
-            framesLeft--;
-        }
-
-        snake.updateAndDrop(targetX, targetY);
+        double[] target = strategy.decide(snake, pellets);
+        snake.updateAndDrop(target[0], target[1]);
     }
 }
