@@ -92,7 +92,7 @@ public class GamePanel extends JPanel implements Runnable {
         for (int i = 0; i < BOT_COUNT; i++) {
             double x = 100 + Math.random() * (WORLD_WIDTH - 200);
             double y = 100 + Math.random() * (WORLD_HEIGHT - 200);
-            bots.add(new Bot("Bot " + (i + 1), x, y, new WanderSeekStrategy()));
+            bots.add(new Bot("Bot " + (i + 1), x, y));
         }
 
         updateLeaderboard();
@@ -283,7 +283,7 @@ public class GamePanel extends JPanel implements Runnable {
                 dropFood(bot.getSnake());
                 double x = 100 + Math.random() * (WORLD_WIDTH - 200);
                 double y = 100 + Math.random() * (WORLD_HEIGHT - 200);
-                bots.set(i, new Bot(bot.getName(), x, y, new WanderSeekStrategy()));
+                bots.set(i, new Bot(bot.getName(), x, y));
             }
         }
 

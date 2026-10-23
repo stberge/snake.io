@@ -34,7 +34,7 @@ public class Snake {
 
         if (withFace) {
             try {
-                faceDerpImg = ImageIO.read(new File("face_derp.png"));
+                faceDerpImg = ImageIO.read(new File(assets/"face_derp.png"));
             } catch (IOException e) {
                 System.err.println("Could not load face_derp.png: " + e.getMessage());
             }
