@@ -14,6 +14,8 @@ public class Snake {
     private static final int CAP_LENGTH = 60;
     private static final double BOOST_SPEED = 6.0;
     private static final int MIN_BOOST_LENGTH = 15;
+    private static final double BOOST_DROP_DISTANCE = 70;
+    private static final int BOOST_PELLET_RADIUS = 10;
 
     private final CopyOnWriteArrayList<double[]> body = new CopyOnWriteArrayList<>();
     private double angle = 0;
@@ -23,9 +25,6 @@ public class Snake {
     private final Color color;
     private boolean alive = true;
 
-    private static final double BOOST_DROP_DISTANCE = 70;
-    private static final int BOOST_PELLET_RADIUS = 10;
-
     public Snake(double x, double y, boolean withFace, Color color) {
         this.color = color;
         for (int i = 0; i < SEGMENTS; i++) {
@@ -34,7 +33,7 @@ public class Snake {
 
         if (withFace) {
             try {
-                faceDerpImg = ImageIO.read(new File(assets/"face_derp.png"));
+                faceDerpImg = ImageIO.read(new File("face_derp.png"));
             } catch (IOException e) {
                 System.err.println("Could not load face_derp.png: " + e.getMessage());
             }
@@ -51,6 +50,7 @@ public class Snake {
     public void setBoosting(boolean held) {
         this.boostHeld = held;
     }
+
     public void setAngle(double newAngle) {
         this.angle = newAngle;
     }
@@ -62,11 +62,11 @@ public class Snake {
     public boolean isAlive() {
         return alive;
     }
-    
+
     public void die() {
         alive = false;
     }
-    
+
     public double[][] getBodyPositions() {
         return body.toArray(new double[0][]);
     }
@@ -156,7 +156,7 @@ public class Snake {
             return;
         }
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        
+
         double[][] segs = body.toArray(new double[0][]);
 
         int currentRadius = getRadius();
