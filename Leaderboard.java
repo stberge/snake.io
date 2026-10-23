@@ -23,10 +23,13 @@ public class Leaderboard extends JPanel {
         listeners.add(l);
     }
 
-    public synchronized void addPoints(String name, int points) {
-        scores.merge(name, points, Integer::sum);
+    public synchronized void setScore(String name, int value) {
+        scores.put(name, value);
 
-        List<Map.Entry<String, Integer>> ranking = new ArrayList<>(scores.entrySet());
+        List<Map.Entry<String, Integer>> ranking = new ArrayList<>();
+        for (Map.Entry<String, Integer> e : scores.entrySet()) {
+            ranking.add(new AbstractMap.SimpleEntry<>(e));
+        }
         ranking.sort((a, b) -> b.getValue() - a.getValue());
 
         for (Listener l : listeners) {
