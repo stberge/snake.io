@@ -4,11 +4,13 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
 class Main {
+
+    static final int MAX_NAME_LENGTH = 12;
 
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -62,8 +64,11 @@ class Main {
 
         button.addActionListener(e -> {
             String username = textField.getText().trim();
-            if (username.isEmpty()) {
-                username = "Player";
+            String error = validateName(username);
+            if (error != null) {
+                JOptionPane.showMessageDialog(frame, error, "Invalid name", JOptionPane.WARNING_MESSAGE);
+                textField.requestFocusInWindow();
+                return;
             }
             startGame(frame, username);
         });
@@ -71,6 +76,17 @@ class Main {
         frame.setContentPane(menu);
         frame.revalidate();
         frame.repaint();
+    }
+
+    static String validateName(String raw) {
+        String name = raw.trim();
+        if (name.isEmpty()) {
+            return "Please enter a name.";
+        }
+        if (name.length() > MAX_NAME_LENGTH) {
+            return "Name must be at most " + MAX_NAME_LENGTH + " characters.";
+        }
+        return null;
     }
 
     static void startGame(JFrame frame, String username) {

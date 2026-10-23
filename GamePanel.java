@@ -161,6 +161,14 @@ public class GamePanel extends JPanel implements Runnable {
             g.drawLine(0 - (int) cameraX, y - (int) cameraY, WORLD_WIDTH - (int) cameraX, y - (int) cameraY);
         }
     }
+
+    // draws the arena border at the world edges
+    private void drawBorder(Graphics2D g) {
+        g.setColor(new Color(220, 60, 60));
+        g.setStroke(new BasicStroke(6));
+        g.drawRect((int) (-cameraX), (int) (-cameraY), WORLD_WIDTH, WORLD_HEIGHT);
+        g.setStroke(new BasicStroke(1));
+    }
     
 
     // camera
@@ -380,6 +388,7 @@ public class GamePanel extends JPanel implements Runnable {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGrid((Graphics2D) g);
+        drawBorder((Graphics2D) g);
         for (Food pellet : pellets) {
             pellet.draw((Graphics2D) g, cameraX, cameraY);
         }
