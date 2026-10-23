@@ -21,6 +21,7 @@ public class Snake {
     private double distanceSinceLastDrop = 0;
     private BufferedImage faceDerpImg;
     private final Color color;
+    private boolean alive = true;
 
     private static final double BOOST_DROP_DISTANCE = 70;
     private static final int BOOST_PELLET_RADIUS = 10;
@@ -56,6 +57,18 @@ public class Snake {
 
     public int getLength() {
         return body.size();
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+    
+    public void die() {
+        alive = false;
+    }
+    
+    public double[][] getBodyPositions() {
+        return body.toArray(new double[0][]);
     }
 
     public Food updateAndDrop(double targetX, double targetY) {
@@ -139,8 +152,11 @@ public class Snake {
     }
 
     public void draw(Graphics2D g, double cameraX, double cameraY) {
+        if (!alive) {
+            return;
+        }
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-
+        
         double[][] segs = body.toArray(new double[0][]);
 
         int currentRadius = getRadius();
